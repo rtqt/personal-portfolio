@@ -23,7 +23,7 @@ export function Navbar() {
             <nav id="navbar" className={isScrolled ? "scrolled" : ""}>
                 <div className="container nav-inner">
                     <Link href="#hero" className="nav-logo" onClick={closeMenu}>
-                        AM.
+                        &lt;AW /&gt;
                     </Link>
                     <ul className="nav-links">
                         <li>
