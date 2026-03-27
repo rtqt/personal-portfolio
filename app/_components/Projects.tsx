@@ -46,10 +46,10 @@ export function Projects() {
                                     ))}
                                 </div>
                                 <div className="project-links">
-                                    <Link href={project.liveUrl} className="project-link">
+                                    <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="project-link">
                                         Live Demo →
                                     </Link>
-                                    <Link href={project.githubUrl} className="project-link">
+                                    <Link href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="project-link">
                                         GitHub →
                                     </Link>
                                 </div>

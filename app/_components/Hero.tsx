@@ -189,32 +189,6 @@ export function Hero() {
                         />
                     </div>
 
-                    <div className="hero-stats reveal delay-5">
-                        <div>
-                            <div className="hero-stat-value" data-count={stats.years}>
-                                0
-                            </div>
-                            <div className="hero-stat-label">Years Experience</div>
-                        </div>
-                        <div>
-                            <div className="hero-stat-value" data-count={stats.projects}>
-                                0
-                            </div>
-                            <div className="hero-stat-label">Projects Shipped</div>
-                        </div>
-                        <div>
-                            <div className="hero-stat-value" data-count={stats.clients}>
-                                0
-                            </div>
-                            <div className="hero-stat-label">Happy Clients</div>
-                        </div>
-                        <div>
-                            <div className="hero-stat-value" data-count={stats.repos}>
-                                0
-                            </div>
-                            <div className="hero-stat-label">GitHub Repos</div>
-                        </div>
-                    </div>
                 </div>
             </div>
 

@@ -6,7 +6,7 @@ export function Footer() {
             <div className="container footer-inner">
                 <p className="footer-copy">
                     © {new Date().getFullYear()}{" "}
-                    <Link href="#hero">Adam Wondale</Link>. Built with ❤️ and Next.js.
+                    <Link href="#hero">Adam Wondale</Link>.
                 </p>
                 <nav className="footer-nav">
                     <Link href="#projects">Work</Link>

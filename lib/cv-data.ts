@@ -69,16 +69,15 @@ export interface CVData {
 export const defaultCVData: CVData = {
     personal: {
         name: "Adam Wondale",
-        title: "Aspiring Software Engineer | Seeking Internship at IE Networks Solutions",
-        email: "adam.wondale@example.com", // Placeholder
-        phone: "+251 911 000 000",        // Placeholder
+        title: "Full Stack Developer",
+        email: "adambegizew@gmail.com",
+        phone: "+251 9 67 82 58 21",
         location: "Addis Ababa, Ethiopia",
-        linkedin: "linkedin.com/in/adamwondale",
-        github: "github.com/adamwondale",
+        linkedin: "linkedin.com/in/adam-begizew-212129395",
+        github: "github.com/rtqt",
         website: "adamwondale.dev",
         photoPath: "/images/profile/adam.jpg",
-        summary:
-            "Recent Computer Science graduate with a passion for leveraging technology to solve real-world problems, particularly in smart infrastructure and community engagement. Developed a crowdsourcing platform during my final year project using React Native, React.js, and MySQL, enabling citizens to report issues and authorities to resolve them efficiently. Eager to join IE Networks Solutions as a Software Engineering Intern to contribute to innovative enterprise solutions, cloud services, and smart city initiatives that transform businesses across Africa.",
+        summary: "I'm a recent computer science graduate who loves building things that actually work. I'm highly motivated to create polished web applications with a focus on seamless user experiences. Currently looking forward to diving into my first full-time developer role.",
     },
     experience: [], // Fresh graduate, emphasizing projects and education instead
     projects: [
@@ -114,11 +113,10 @@ export const defaultCVData: CVData = {
     education: [
         {
             id: "edu1",
-            institution: "State University of Technology",
+            institution: "Unity University",
             degree: "BSc Computer Science",
-            dates: "Sep 2022 — May 2026",
-            notes:
-                "First Class Honours. Specialised in distributed systems & HCI. Best Final Year Project Award.",
+            dates: "Sep 2020 — May 2024",
+            notes: "Graduated with a strong focus on web technologies and software engineering. Constantly built side projects to apply theoretical concepts to real-world applications.",
         },
     ],
 

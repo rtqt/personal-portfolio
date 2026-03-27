@@ -8,19 +8,32 @@ export function Contact() {
         "idle"
     );
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setStatus("submitting");
 
-        // Simulate API call
-        setTimeout(() => {
-            setStatus("success");
-            // Reset after 3 seconds
-            setTimeout(() => {
+        const form = e.target as HTMLFormElement;
+        const data = new FormData(form);
+
+        try {
+            const response = await fetch("https://formspree.io/f/mvzvgdvl", {
+                method: "POST",
+                body: data,
+                headers: { Accept: "application/json" },
+            });
+
+            if (response.ok) {
+                setStatus("success");
+                form.reset();
+                setTimeout(() => setStatus("idle"), 5000);
+            } else {
                 setStatus("idle");
-                (e.target as HTMLFormElement).reset();
-            }, 3000);
-        }, 1000);
+                alert("Something went wrong with the submission. Please try again.");
+            }
+        } catch (error) {
+            setStatus("idle");
+            alert("Network error. Please try again later.");
+        }
     };
 
     return (
@@ -43,26 +56,25 @@ export function Contact() {
                             }}
                         >
                             Whether you have a role in mind, a project to build, or just want
-                            to connect — my inbox is always open. I&apos;ll get back to you
-                            within 24 hours.
+                            to connect — my inbox is always open!
                         </p>
 
-                        <a href="mailto:alex@example.com" className="contact-item">
+                        <a href="mailto:adambegizew@gmail.com" className="contact-item">
                             <div className="contact-icon">📧</div>
-                            <span>alex@example.com</span>
+                            <span>adambegizew@gmail.com</span>
                         </a>
-                        <a href="tel:+1234567890" className="contact-item">
+                        <a href="tel:+251967825821" className="contact-item">
                             <div className="contact-icon">📞</div>
-                            <span>+1 (234) 567-890</span>
+                            <span>+251 9 67 82 58 21 </span>
                         </a>
                         <div className="contact-item">
                             <div className="contact-icon">📍</div>
-                            <span>San Francisco, CA · Open to Remote</span>
+                            <span>Addis Ababa Ethiopia · Open to Remote</span>
                         </div>
 
                         <div className="social-links">
                             <Link
-                                href="#"
+                                href="https://github.com/rtqt"
                                 className="social-link"
                                 title="GitHub"
                                 aria-label="GitHub"
@@ -77,7 +89,9 @@ export function Contact() {
                                 </svg>
                             </Link>
                             <Link
-                                href="#"
+                                href="https://www.linkedin.com/in/adam-begizew-212129395/"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="social-link"
                                 title="LinkedIn"
                                 aria-label="LinkedIn"
@@ -89,21 +103,6 @@ export function Contact() {
                                     fill="currentColor"
                                 >
                                     <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.35-1.85 3.58 0 4.25 2.36 4.25 5.43v6.31zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM3.56 20.45h3.56V9H3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.46C23.2 24 24 23.23 24 22.27V1.73C24 .77 23.2 0 22.23 0z" />
-                                </svg>
-                            </Link>
-                            <Link
-                                href="#"
-                                className="social-link"
-                                title="Twitter / X"
-                                aria-label="Twitter"
-                            >
-                                <svg
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                >
-                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                                 </svg>
                             </Link>
                         </div>
@@ -120,8 +119,9 @@ export function Contact() {
                                     <input
                                         type="text"
                                         id="name"
+                                        name="name"
                                         className="form-input"
-                                        placeholder="Jane Smith"
+                                        placeholder="Name"
                                         required
                                     />
                                 </div>
@@ -132,8 +132,9 @@ export function Contact() {
                                     <input
                                         type="email"
                                         id="email"
+                                        name="email"
                                         className="form-input"
-                                        placeholder="jane@company.com"
+                                        placeholder="Email"
                                         required
                                     />
                                 </div>
@@ -145,6 +146,7 @@ export function Contact() {
                                 <input
                                     type="text"
                                     id="subject"
+                                    name="subject"
                                     className="form-input"
                                     placeholder="Let's discuss a project..."
                                 />
@@ -155,6 +157,7 @@ export function Contact() {
                                 </label>
                                 <textarea
                                     id="message"
+                                    name="message"
                                     className="form-input"
                                     placeholder="Tell me about your project, role, or idea..."
                                     required
@@ -173,7 +176,7 @@ export function Contact() {
                             className="form-success"
                             style={{ display: status === "success" ? "block" : "none" }}
                         >
-                            ✅ Message sent! I&apos;ll get back to you within 24 hours.
+                            ✅ Message sent! I&apos;ll get back to you soon.
                         </div>
                     </div>
                 </div>
