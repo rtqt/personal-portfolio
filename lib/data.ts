@@ -27,7 +27,7 @@ export interface TimelineItem {
 
 export const stats = {
     years: 0,
-    projects: 2,
+    projects: 3,
     clients: 0,
     repos: 15,
 };
@@ -56,6 +56,18 @@ export const projects: Project[] = [
         imageAlt: "Developer Portfolio",
         liveUrl: "https://adamwondale.dev",
         githubUrl: "https://github.com/rtqt/personal-portfolio",
+    },
+    {
+        id: "p3",
+        num: "03",
+        title: "Exit Exam Platform",
+        impact: "Comprehensive mock exam preparation",
+        desc: "A full-stack educational platform for university students to prepare for exit exams. Features robust filtering, mock data rendering, and a fully typed backend with Drizzle ORM.",
+        tags: ["React", "Express", "Drizzle", "PostgreSQL"],
+        image: "/images/projects/exit-exam.png",
+        imageAlt: "Exit Exam Preparation Platform",
+        liveUrl: "https://exitexam-six.vercel.app/",
+        githubUrl: "https://github.com/rtqt/exit-exam",
     },
 ];
 
