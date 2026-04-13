@@ -1,17 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
-import { projects as staticProjects } from "@/lib/data";
+import { projects as staticProjects, Project } from "@/lib/data";
 import { supabase } from "@/lib/supabase";
 
 export async function Projects() {
-    // Fetch dynamic projects from Supabase
-    const { data: dynamicProjects, error } = await supabase
-        .from("projects")
-        .select("*")
-        .order("created_at", { ascending: true });
+    // Fetch dynamic projects from Supabase — fall back gracefully at build time
+    let dynamicProjects: Project[] = [];
+    try {
+        const { data, error } = await supabase
+            .from("projects")
+            .select("*")
+            .order("created_at", { ascending: true });
 
-    if (error) {
-        console.error("Failed to fetch dynamic projects:", error);
+        if (error) {
+            console.error("Failed to fetch dynamic projects:", error);
+        } else {
+            dynamicProjects = data ?? [];
+        }
+    } catch (err) {
+        console.warn("Supabase unreachable, using static projects only:", err);
     }
 
     // Merge static and dynamic projects
