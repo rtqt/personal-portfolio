@@ -75,7 +75,7 @@ export const defaultCVData: CVData = {
         email: "adambegizew@gmail.com",
         phone: "+251 9 67 82 58 21",
         location: "Addis Ababa, Ethiopia",
-        linkedin: "linkedin.com/in/adam-begizew-212129395",
+        linkedin: "linkedin.com/in/adam-begizew",
         github: "github.com/rtqt",
         website: "adamwondale.dev",
         photoPath: "/images/profile/adam.jpg",

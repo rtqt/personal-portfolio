@@ -16,10 +16,19 @@ export function Contact() {
         const data = new FormData(form);
 
         try {
-            const response = await fetch("https://formspree.io/f/mvzvgdvl", {
+            const response = await fetch("https://api.web3forms.com/submit", {
                 method: "POST",
-                body: data,
-                headers: { Accept: "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({
+                    access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY,
+                    name: data.get("name"),
+                    email: data.get("email"),
+                    subject: data.get("subject"),
+                    message: data.get("message"),
+                }),
             });
 
             if (response.ok) {
@@ -89,7 +98,7 @@ export function Contact() {
                                 </svg>
                             </Link>
                             <Link
-                                href="https://www.linkedin.com/in/adam-begizew-212129395/"
+                                href="https://www.linkedin.com/in/adam-begizew"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="social-link"
