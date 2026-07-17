@@ -60,6 +60,7 @@ export interface CVData {
     projects: CVProject[];
     education: CVEducation[];
     skillGroups: CVSkillGroup[];
+    selectedTemplate?: "modern" | "executive" | "creative";
 }
 
 // ─────────────────────────────────────────────
@@ -67,6 +68,7 @@ export interface CVData {
 // ─────────────────────────────────────────────
 
 export const defaultCVData: CVData = {
+    selectedTemplate: "modern",
     personal: {
         name: "Adam Wondale",
         title: "Full Stack Developer",

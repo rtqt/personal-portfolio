@@ -1,0 +1,50 @@
+cv:
+  name: Adam Wondale Begizew
+  location: Addis Ababa, Ethiopia
+  email: adambegizew@gmail.com
+  phone: "+251967825821"
+
+  sections:
+    summary:
+      - "I'm a recent Computer Science graduate who builds full-stack web and mobile applications. I work primarily with Next.js, React Native, and Node.js. For my final year project, I led backend development on a community crowdsourcing platform, and I've also built e-commerce web applications and AI-powered exam prep tools. I care most about building practical software that actually works. I adapt quickly to new stacks and excel in team environments through clear and effective communication."
+
+    experience:
+      - company: Community Issue Crowdsourcing Platform
+        position: Backend Engineer & Project Manager
+        highlights:
+          - "Led backend development and managed the project lifecycle from ideation to delivery for final year university project."
+          - "Built a robust platform allowing community members to report local issues, implemented with scalable API endpoints."
+      - company: Shoe Store Web App
+        position: Full Stack Developer
+        highlights:
+          - "Developed a digital catalog and seamless ordering web application backed by Supabase for a local shoe store."
+      - company: AI-Powered Exit Exam Tool
+        position: Developer
+        highlights:
+          - "Created an application that allows users to add questions and receive detailed explanations powered by an AI API."
+      - company: Personal Portfolio Website
+        position: Frontend Developer
+        highlights:
+          - "Built a modern, responsive portfolio website using Next.js to showcase projects, skills, and professional experience."
+      - company: CAWEE, Addis Ababa
+        position: Data Encoder (Volunteer)
+        highlights:
+          - "Volunteered for 1.5 months to manage data entry, ensure data integrity, and maintain digital records."
+
+    education:
+      - institution: Unity University
+        area: Computer Science
+        degree: BS.
+        start_date: 2022-09
+        end_date: 2026-04
+
+    skills:
+      - label: Frontend & Mobile
+        details: Next.js, TailwindCSS, React Native, Flutter
+      - label: Backend & Databases
+        details: Express.js, GraphQL, Supabase, Neon DB, Convex
+      - label: Tools & DevOps
+        details: Git, GitHub, Docker, Vercel
+
+design:
+  theme: classic

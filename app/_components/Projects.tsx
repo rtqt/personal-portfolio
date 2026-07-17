@@ -1,24 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { projects as staticProjects, Project } from "@/lib/data";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/db";
+import { projects as projectsTable } from "@/lib/db/schema";
+import { asc } from "drizzle-orm";
 
 export async function Projects() {
-    // Fetch dynamic projects from Supabase — fall back gracefully at build time
+    // Fetch dynamic projects from Neon DB — fall back gracefully at build time
     let dynamicProjects: Project[] = [];
     try {
-        const { data, error } = await supabase
-            .from("projects")
-            .select("*")
-            .order("created_at", { ascending: true });
-
-        if (error) {
-            console.error("Failed to fetch dynamic projects:", error);
-        } else {
-            dynamicProjects = data ?? [];
-        }
+        const data = await db.select().from(projectsTable).orderBy(asc(projectsTable.id));
+        // Cast to any to handle type slight differences, or rely on Drizzle's inference
+        dynamicProjects = data as any;
     } catch (err) {
-        console.warn("Supabase unreachable, using static projects only:", err);
+        console.warn("Neon DB unreachable, using static projects only:", err);
     }
 
     // Merge static and dynamic projects

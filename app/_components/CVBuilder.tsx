@@ -3,7 +3,7 @@
 //  CVBuilder.tsx  –  Tabbed admin form for editing CV data in the browser
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -63,6 +63,342 @@ const skillGroupSchema = z.object({
     skillsRaw: z.string().min(1, "Enter skills, comma-separated"),
 });
 
+// ─── Image compression utility ───────────────────────────────────────────────
+async function compressImage(source: string | File, maxWidth = 250, maxHeight = 250): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width = Math.round((width * maxHeight) / height);
+                    height = maxHeight;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) {
+                reject(new Error("Failed to get 2D context"));
+                return;
+            }
+
+            // Draw image resized
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Compress to JPEG with 0.8 quality
+            const base64 = canvas.toDataURL("image/jpeg", 0.8);
+            resolve(base64);
+        };
+        img.onerror = (e) => reject(e);
+
+        if (source instanceof File) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                img.src = reader.result as string;
+            };
+            reader.onerror = (e) => reject(e);
+            reader.readAsDataURL(source);
+        } else {
+            img.src = source;
+        }
+    });
+}
+
+// ─── Custom Photo and Avatar Designer Component ──────────────────────────────
+function PhotoManager({
+    value,
+    onChange,
+    userName,
+}: {
+    value: string;
+    onChange: (val: string) => void;
+    userName: string;
+}) {
+    const [mode, setMode] = useState<"view" | "upload" | "generate">("view");
+    const [dragActive, setDragActive] = useState(false);
+    const [gradient, setGradient] = useState<string>("sunset");
+    const [fontFamily, setFontFamily] = useState<string>("Helvetica-Bold");
+    const [shape, setShape] = useState<"circle" | "square">("circle");
+    const [textColor, setTextColor] = useState<string>("#ffffff");
+    const [compressing, setCompressing] = useState(false);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    const GRADIENTS: Record<string, [string, string]> = {
+        sunset: ["#f59e0b", "#ef4444"],
+        ocean: ["#3b82f6", "#06b6d4"],
+        emerald: ["#10b981", "#059669"],
+        indigo: ["#6366f1", "#8b5cf6"],
+        darkminimal: ["#1f2937", "#111827"]
+    };
+
+    useEffect(() => {
+        if (mode !== "generate") return;
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw shape background
+        if (shape === "circle") {
+            ctx.beginPath();
+            ctx.arc(100, 100, 100, 0, 2 * Math.PI);
+            ctx.clip();
+        }
+
+        const colors = GRADIENTS[gradient] || GRADIENTS.sunset;
+        const grad = ctx.createLinearGradient(0, 0, 200, 200);
+        grad.addColorStop(0, colors[0]);
+        grad.addColorStop(1, colors[1]);
+        ctx.fillStyle = grad;
+
+        if (shape === "circle") {
+            ctx.fillRect(0, 0, 200, 200);
+        } else {
+            // Draw rounded square (radius 30)
+            const r = 30;
+            ctx.beginPath();
+            ctx.moveTo(r, 0);
+            ctx.lineTo(200 - r, 0);
+            ctx.quadraticCurveTo(200, 0, 200, r);
+            ctx.lineTo(200, 200 - r);
+            ctx.quadraticCurveTo(200, 200, 200 - r, 200);
+            ctx.lineTo(r, 200);
+            ctx.quadraticCurveTo(0, 200, 0, 200 - r);
+            ctx.lineTo(0, r);
+            ctx.quadraticCurveTo(0, 0, r, 0);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        // Draw text
+        const initials = userName
+            ? userName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()
+            : "CV";
+
+        ctx.fillStyle = textColor;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = `bold 64px ${
+            fontFamily === "Helvetica-Bold"
+                ? "Helvetica, Arial, sans-serif"
+                : fontFamily === "Georgia"
+                ? "Georgia, serif"
+                : "Courier New, monospace"
+        }`;
+
+        ctx.fillText(initials, 100, 100);
+    }, [mode, gradient, fontFamily, shape, textColor, userName]);
+
+    const handleFile = async (file: File) => {
+        if (!file.type.startsWith("image/")) return;
+        setCompressing(true);
+        try {
+            const compressed = await compressImage(file, 200, 200);
+            onChange(compressed);
+            setMode("view");
+        } catch (e) {
+            console.error("Compression failed:", e);
+        } finally {
+            setCompressing(false);
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    };
+
+    const applyGeneratedAvatar = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const dataUrl = canvas.toDataURL("image/png");
+        onChange(dataUrl);
+        setMode("view");
+    };
+
+    return (
+        <div className="cv-photo-manager">
+            {mode === "view" && (
+                <div className="photo-view-layout">
+                    <div className="photo-preview-circle">
+                        {value ? (
+                            <img src={value} alt="Profile" className="photo-img-element" />
+                        ) : (
+                            <div className="photo-placeholder-initials">
+                                {userName ? userName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() : "CV"}
+                            </div>
+                        )}
+                    </div>
+                    <div className="photo-actions-group">
+                        <div className="photo-actions-buttons">
+                            <button type="button" className="cvb-btn-ghost" onClick={() => setMode("upload")}>
+                                Upload Photo
+                            </button>
+                            <button type="button" className="cvb-btn-ghost" onClick={() => setMode("generate")}>
+                                Design Avatar
+                            </button>
+                            {value && (
+                                <button type="button" className="cvb-btn-danger" onClick={() => onChange("")}>
+                                    Clear
+                                </button>
+                            )}
+                        </div>
+                        <span className="photo-status-info">
+                            {value ? "✓ Custom profile image loaded" : "Using auto-generated initials"}
+                        </span>
+                    </div>
+                </div>
+            )}
+
+            {mode === "upload" && (
+                <div className="photo-upload-layout">
+                    <div
+                        className={`photo-drop-zone ${dragActive ? "drop-active" : ""}`}
+                        onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
+                        onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+                        onDragLeave={() => setDragActive(false)}
+                        onDrop={handleDrop}
+                    >
+                        {compressing ? (
+                            <div className="compressing-indicator">
+                                <span className="cv-spinner" />
+                                <span>Compressing image...</span>
+                            </div>
+                        ) : (
+                            <label className="upload-label-trigger">
+                                <span>Drag & Drop image here or <strong>Browse</strong></span>
+                                <span className="sub-info">JPEG, PNG formats. Resized automatically.</span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden-file-input"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            handleFile(e.target.files[0]);
+                                        }
+                                    }}
+                                />
+                            </label>
+                        )}
+                    </div>
+                    <button type="button" className="cvb-btn-ghost" onClick={() => setMode("view")}>
+                        Back to Preview
+                    </button>
+                </div>
+            )}
+
+            {mode === "generate" && (
+                <div className="photo-generate-layout">
+                    <div className="canvas-wrapper">
+                        <canvas ref={canvasRef} width={200} height={200} className="avatar-preview-canvas" />
+                    </div>
+                    <div className="generator-controls">
+                        <div className="control-group">
+                            <label className="control-label">Background Gradient</label>
+                            <div className="preset-swatches">
+                                {Object.keys(GRADIENTS).map(preset => (
+                                    <button
+                                        key={preset}
+                                        type="button"
+                                        className={`swatch-btn ${gradient === preset ? "swatch-active" : ""}`}
+                                        style={{
+                                            background: `linear-gradient(135deg, ${GRADIENTS[preset][0]}, ${GRADIENTS[preset][1]})`
+                                        }}
+                                        onClick={() => setGradient(preset)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="control-row">
+                            <div className="control-group">
+                                <label className="control-label">Shape</label>
+                                <select
+                                    value={shape}
+                                    className="cvb-select"
+                                    onChange={(e) => setShape(e.target.value as any)}
+                                >
+                                    <option value="circle">Circular</option>
+                                    <option value="square">Rounded Square</option>
+                                </select>
+                            </div>
+
+                            <div className="control-group">
+                                <label className="control-label">Font Style</label>
+                                <select
+                                    value={fontFamily}
+                                    className="cvb-select"
+                                    onChange={(e) => setFontFamily(e.target.value)}
+                                >
+                                    <option value="Helvetica-Bold">Modern Sans</option>
+                                    <option value="Georgia">Elegant Serif</option>
+                                    <option value="Courier New">Tech Mono</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="control-group">
+                            <label className="control-label">Text Color</label>
+                            <div className="color-choices">
+                                <button
+                                    type="button"
+                                    className={`color-choice-btn ${textColor === "#ffffff" ? "choice-active" : ""}`}
+                                    style={{ backgroundColor: "#ffffff", color: "#000000" }}
+                                    onClick={() => setTextColor("#ffffff")}
+                                >
+                                    White
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`color-choice-btn ${textColor === "#1f2937" ? "choice-active" : ""}`}
+                                    style={{ backgroundColor: "#f3f4f6", color: "#1f2937" }}
+                                    onClick={() => setTextColor("#1f2937")}
+                                >
+                                    Dark
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`color-choice-btn ${textColor === "#f59e0b" ? "choice-active" : ""}`}
+                                    style={{ backgroundColor: "#1e1b4b", color: "#f59e0b" }}
+                                    onClick={() => setTextColor("#f59e0b")}
+                                >
+                                    Amber
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="generator-actions">
+                            <button type="button" className="cvb-btn-primary" onClick={applyGeneratedAvatar}>
+                                Apply Designed Avatar
+                            </button>
+                            <button type="button" className="cvb-btn-ghost" onClick={() => setMode("view")}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 type Tab = "personal" | "experience" | "projects" | "education" | "skills";
 
@@ -92,6 +428,11 @@ export function CVBuilder({ initialData, onUpdate }: Props) {
         setTimeout(() => setSavedMsg(false), 2000);
     }
 
+    function handleSelectTemplate(template: "modern" | "executive" | "creative") {
+        const next = { ...data, selectedTemplate: template };
+        push(next);
+    }
+
     const TABS: { id: Tab; label: string }[] = [
         { id: "personal", label: "Personal" },
         { id: "experience", label: "Experience" },
@@ -102,8 +443,66 @@ export function CVBuilder({ initialData, onUpdate }: Props) {
 
     return (
         <div className="cvb-root">
+            {/* Visual CV Template Style Switcher */}
+            <div className="cvb-style-selector">
+                <h3 className="cvb-section-subtitle">Select CV Layout Style</h3>
+                <div className="cvb-template-grid">
+                    <button
+                        onClick={() => handleSelectTemplate("modern")}
+                        className={`cvb-template-card ${(data.selectedTemplate || "modern") === "modern" ? "cvb-template-card--active" : ""}`}
+                    >
+                        <div className="cvb-template-preview preview-modern">
+                            <div className="sidebar-bar"></div>
+                            <div className="main-content-lines">
+                                <div className="line-1"></div>
+                                <div className="line-2"></div>
+                                <div className="line-3"></div>
+                            </div>
+                        </div>
+                        <div className="cvb-template-info">
+                            <span className="cvb-template-name">Modern Sidebar</span>
+                            <span className="cvb-template-desc">Amber accent, left dark sidebar</span>
+                        </div>
+                    </button>
+
+                    <button
+                        onClick={() => handleSelectTemplate("executive")}
+                        className={`cvb-template-card ${data.selectedTemplate === "executive" ? "cvb-template-card--active" : ""}`}
+                    >
+                        <div className="cvb-template-preview preview-executive">
+                            <div className="header-block"></div>
+                            <div className="two-columns">
+                                <div className="col-1"></div>
+                                <div className="col-2"></div>
+                            </div>
+                        </div>
+                        <div className="cvb-template-info">
+                            <span className="cvb-template-name">Minimalist Executive</span>
+                            <span className="cvb-template-desc">Clean Slate/Navy, elegant executive styling</span>
+                        </div>
+                    </button>
+
+                    <button
+                        onClick={() => handleSelectTemplate("creative")}
+                        className={`cvb-template-card ${data.selectedTemplate === "creative" ? "cvb-template-card--active" : ""}`}
+                    >
+                        <div className="cvb-template-preview preview-creative">
+                            <div className="top-banner"></div>
+                            <div className="bento-layout">
+                                <div className="bento-box"></div>
+                                <div className="bento-box"></div>
+                            </div>
+                        </div>
+                        <div className="cvb-template-info">
+                            <span className="cvb-template-name">Creative Bento</span>
+                            <span className="cvb-template-desc">Teal/Indigo grid boxes, developer theme</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
             <div className="cvb-header">
-                <h2 className="cvb-title">CV Builder</h2>
+                <h2 className="cvb-title">CV Content Sections</h2>
                 {savedMsg && <span className="cvb-saved">✓ Saved</span>}
             </div>
 
@@ -219,10 +618,13 @@ export function CVBuilder({ initialData, onUpdate }: Props) {
 
 // ─── Personal Tab ─────────────────────────────────────────────────────────────
 function PersonalTab({ data, push }: { data: CVData; push: (d: CVData) => void }) {
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
         resolver: zodResolver(personalSchema),
         defaultValues: data.personal,
     });
+
+    const photoPathValue = watch("photoPath") || "";
+    const nameValue = watch("name") || "";
 
     return (
         <form
@@ -255,11 +657,16 @@ function PersonalTab({ data, push }: { data: CVData; push: (d: CVData) => void }
                     <input {...register("github")} className="cvb-input" />
                 </Field>
                 <Field
-                    label="Photo (public path, e.g. /photo.jpg)"
+                    label="Profile Photo / Custom Avatar"
                     error={errors.photoPath?.message}
                     full
                 >
-                    <input {...register("photoPath")} className="cvb-input" placeholder="/photo.jpg" />
+                    <PhotoManager
+                        value={photoPathValue}
+                        onChange={(val) => setValue("photoPath", val)}
+                        userName={nameValue}
+                    />
+                    <input type="hidden" {...register("photoPath")} />
                 </Field>
                 <Field label="Summary / Profile" error={errors.summary?.message} full>
                     <textarea {...register("summary")} className="cvb-input cvb-textarea" rows={4} />

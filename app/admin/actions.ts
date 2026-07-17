@@ -1,7 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getAdminSupabase } from "@/lib/supabase";
+import { db } from "@/lib/db";
+import { projects } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { put, del } from "@vercel/blob";
 
 export async function addProjectAction(formData: FormData) {
   try {
@@ -31,35 +34,24 @@ export async function addProjectAction(formData: FormData) {
     }
 
     const tags = tagsString.split(",").map(t => t.trim());
-    const supabase = getAdminSupabase();
     
-    // 1. Upload the image
+    // 1. Upload the image to Vercel Blob
     const fileExt = imageFile.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const fileName = `portfolio-assets/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
     
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('portfolio-assets')
-      .upload(fileName, imageFile, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-    if (uploadError) {
-      console.error("Upload error", uploadError);
-      return { error: "Failed to upload image: " + uploadError.message };
+    let blob;
+    try {
+      blob = await put(fileName, imageFile, { access: 'public' });
+    } catch (uploadError: any) {
+      console.error("Vercel Blob upload error", uploadError);
+      return { error: "Failed to upload image to Vercel Blob: " + uploadError.message };
     }
 
-    // 2. Get Public URL
-    const { data: publicUrlData } = supabase.storage
-      .from('portfolio-assets')
-      .getPublicUrl(fileName);
+    const imageUrl = blob.url;
 
-    const imageUrl = publicUrlData.publicUrl;
-
-    // 3. Insert record into database
-    const { error: insertError } = await supabase
-      .from("projects")
-      .insert({
+    // 2. Insert record into Neon DB via Drizzle
+    try {
+      await db.insert(projects).values({
         num,
         title,
         impact,
@@ -70,13 +62,12 @@ export async function addProjectAction(formData: FormData) {
         liveUrl,
         githubUrl
       });
-
-    if (insertError) {
-      console.error("Insert error", insertError);
+    } catch (insertError: any) {
+      console.error("Drizzle insert error", insertError);
       return { error: "Failed to insert database record: " + insertError.message };
     }
 
-    // 4. Revalidate cache so the homepage updates instantly
+    // 3. Revalidate cache so the homepage updates instantly
     revalidatePath("/");
     
     return { success: true };
@@ -90,7 +81,7 @@ export async function addProjectAction(formData: FormData) {
 export async function deleteProjectAction(formData: FormData) {
   try {
     const password = formData.get("password")?.toString();
-    const projectId = formData.get("projectId")?.toString();
+    const projectIdStr = formData.get("projectId")?.toString();
 
     // 1. Validate admin password
     const adminPassword = process.env.ADMIN_PASSWORD;
@@ -103,56 +94,39 @@ export async function deleteProjectAction(formData: FormData) {
       return { error: "Invalid admin password" };
     }
 
-    if (!projectId) {
+    if (!projectIdStr) {
       return { error: "Missing required field: projectId" };
     }
-
-    const supabase = getAdminSupabase();
+    
+    const projectId = parseInt(projectIdStr, 10);
 
     // 2. Fetch project record to get image URL
-    const { data: project, error: fetchError } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("id", projectId)
-      .single();
-
-    if (fetchError || !project) {
+    let project;
+    try {
+      const records = await db.select().from(projects).where(eq(projects.id, projectId));
+      project = records[0];
+    } catch (fetchError) {
       console.error("Fetch error", fetchError);
       return { error: "Project not found" };
     }
 
-    // 3. Extract filename from image URL and delete from storage
+    if (!project) {
+      return { error: "Project not found in database" };
+    }
+
+    // 3. Delete from Vercel Blob
     if (project.image) {
       try {
-        const urlParts = project.image.split('/');
-        const filename = urlParts[urlParts.length - 1];
-
-        const { error: storageError } = await supabase.storage
-          .from('portfolio-assets')
-          .remove([filename]);
-
-        if (storageError) {
-          // If image doesn't exist (404), log warning but continue
-          if (storageError.message?.includes('404') || storageError.message?.includes('not found')) {
-            console.warn("Image file not found in storage, continuing with database deletion");
-          } else {
-            console.error("Storage deletion error", storageError);
-            return { error: "Failed to delete image: " + storageError.message };
-          }
-        }
+        await del(project.image);
       } catch (imageError: any) {
-        console.error("Image deletion error", imageError);
-        return { error: "Failed to delete image: " + imageError.message };
+        console.warn("Failed to delete image from Vercel Blob, continuing with database deletion:", imageError.message);
       }
     }
 
     // 4. Delete project record from database
-    const { error: deleteError } = await supabase
-      .from("projects")
-      .delete()
-      .eq("id", projectId);
-
-    if (deleteError) {
+    try {
+      await db.delete(projects).where(eq(projects.id, projectId));
+    } catch (deleteError: any) {
       console.error("Database deletion error", deleteError);
       return { error: "Failed to delete project record: " + deleteError.message };
     }
