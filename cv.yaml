@@ -9,27 +9,41 @@ cv:
       - "I'm a recent Computer Science graduate who builds full-stack web and mobile applications. I work primarily with Next.js, React Native, and Node.js. For my final year project, I led backend development on a community crowdsourcing platform, and I've also built e-commerce web applications and AI-powered exam prep tools. I care most about building practical software that actually works. I adapt quickly to new stacks and excel in team environments through clear and effective communication."
 
     experience:
-      - company: Community Issue Crowdsourcing Platform
-        position: Backend Engineer & Project Manager
-        highlights:
-          - "Led backend development and managed the project lifecycle from ideation to delivery for final year university project."
-          - "Built a robust platform allowing community members to report local issues, implemented with scalable API endpoints."
-      - company: Shoe Store Web App
-        position: Full Stack Developer
-        highlights:
-          - "Developed a digital catalog and seamless ordering web application backed by Supabase for a local shoe store."
-      - company: AI-Powered Exit Exam Tool
-        position: Developer
-        highlights:
-          - "Created an application that allows users to add questions and receive detailed explanations powered by an AI API."
-      - company: Personal Portfolio Website
-        position: Frontend Developer
-        highlights:
-          - "Built a modern, responsive portfolio website using Next.js to showcase projects, skills, and professional experience."
       - company: CAWEE, Addis Ababa
         position: Data Encoder (Volunteer)
+        start_date: 2026-05
+        end_date: 2026-07
         highlights:
-          - "Volunteered for 1.5 months to manage data entry, ensure data integrity, and maintain digital records."
+          - "Volunteered to manage data entry, ensure data integrity, and maintain digital records."
+          - "Collaborated with team members to streamline data collection processes and improve accuracy."
+
+    projects:
+      - name: Community Issue Crowdsourcing Platform
+        role: Backend Engineer & Project Manager
+        description: "A robust platform allowing community members to report local issues for a final year university project."
+        highlights:
+          - "Led backend development and managed the project lifecycle from ideation to delivery."
+          - "Implemented scalable RESTful API endpoints."
+          - "Designed database schemas and optimized queries to handle concurrent user reports efficiently."
+          - "Collaborated closely with frontend developers to integrate APIs and ensure seamless user experiences."
+      - name: Shoe Store E-Commerce Platform
+        role: Full Stack Developer
+        description: "A digital catalog and seamless ordering web application for a local shoe store."
+        highlights:
+          - "Built custom cart management, product filtering, and a secure admin dashboard from scratch."
+          - "Integrated Supabase for real-time data syncing and user authentication."
+      - name: AI-Powered Exit Exam Tool
+        role: Developer
+        description: "A comprehensive educational platform that generates targeted exit exam preparation questions powered by AI algorithms."
+        highlights:
+          - "Implemented robust filtering and mock data rendering with a fully typed backend using Drizzle ORM and PostgreSQL."
+          - "Allowed users to receive detailed, AI-generated step-by-step explanations for incorrect answers."
+      - name: Interactive Developer Portfolio
+        role: Frontend Developer
+        description: "A modern, responsive portfolio website built using Next.js to showcase projects, skills, and professional experience."
+        highlights:
+          - "Implemented engaging micro-animations and a clean, responsive layout without relying on generic templates."
+          - "Scored 100 on Lighthouse performance audit by optimizing images, fonts, and scripts."
 
     education:
       - institution: Unity University
@@ -40,11 +54,15 @@ cv:
 
     skills:
       - label: Frontend & Mobile
-        details: Next.js, TailwindCSS, React Native, Flutter
+        details: Next.js, React, TailwindCSS, TypeScript, HTML/CSS, React Native, Flutter, Redux
       - label: Backend & Databases
-        details: Express.js, GraphQL, Supabase, Neon DB, Convex
+        details: Node.js, Express.js, Python, FastAPI, PostgreSQL, MongoDB, GraphQL, Supabase, Neon DB, Convex
       - label: Tools & DevOps
-        details: Git, GitHub, Docker, Vercel
+        details: Git, GitHub, Docker, AWS, Vercel, Postman, CI/CD pipelines
+      - label: Soft Skills
+        details: Project Management, Team Leadership, Clear Communication, Fast Learner, Problem Solving, Adaptability
+      - label: Languages
+        details: Amharic (Native), English (C1)
 
 design:
   theme: classic

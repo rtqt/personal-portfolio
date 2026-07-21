@@ -43,7 +43,7 @@ function addExp(title, org, dates, bullets) {
   curY += 15;
   doc.font('Helvetica').fontSize(10).fillColor('#555555').text(`${org} | ${dates}`, 50, curY);
   curY += 15;
-  
+
   bullets.forEach(bullet => {
     doc.circle(58, curY + 5, 2).fillColor('#555555').fill();
     doc.font('Helvetica').fontSize(10).fillColor('#333333').text(bullet, 68, curY, { width: 480, lineGap: 2 });
@@ -104,4 +104,5 @@ doc.end();
 
 outStream.on('finish', () => {
   console.log('PDF generated at ' + outPath);
+});
 });

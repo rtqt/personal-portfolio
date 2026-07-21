@@ -54,6 +54,13 @@ export async function Projects() {
                                 <p className="project-impact">{project.impact}</p>
                                 <h3 className="project-title">{project.title}</h3>
                                 <p className="project-desc">{project.desc}</p>
+                                {project.bullets && project.bullets.length > 0 && (
+                                    <ul className="project-bullets" style={{ paddingLeft: '20px', marginBottom: '15px', color: 'var(--text-secondary)' }}>
+                                        {project.bullets.map((bullet, i) => (
+                                            <li key={i} style={{ marginBottom: '5px', fontSize: '0.9rem' }}>{bullet}</li>
+                                        ))}
+                                    </ul>
+                                )}
                                 <div className="project-tags">
                                     {project.tags.map((tag: string) => (
                                         <span key={tag} className="tag">

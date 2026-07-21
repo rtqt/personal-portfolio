@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { timeline } from "@/lib/data";
 
 export function Experience() {
@@ -18,7 +19,11 @@ export function Experience() {
                                         <div className="timeline-date">{item.date}</div>
                                         <div className="timeline-role">{item.role}</div>
                                         <div className="timeline-company">
-                                            {item.company}
+                                            {item.url ? (
+                                                <Link href={item.url} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: '3px' }}>
+                                                    {item.company}
+                                                </Link>
+                                            ) : item.company}
                                             <span
                                                 className={`badge ${item.badge === "Work" ? "badge-work" : "badge-edu"
                                                     }`}
@@ -43,7 +48,11 @@ export function Experience() {
                                         <div className="timeline-date">{item.date}</div>
                                         <div className="timeline-role">{item.role}</div>
                                         <div className="timeline-company">
-                                            {item.company}
+                                            {item.url ? (
+                                                <Link href={item.url} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: '3px' }}>
+                                                    {item.company}
+                                                </Link>
+                                            ) : item.company}
                                             <span
                                                 className={`badge ${item.badge === "Work" ? "badge-work" : "badge-edu"
                                                     }`}

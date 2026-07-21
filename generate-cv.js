@@ -8,7 +8,6 @@ const path = require('path');
   });
   const page = await browser.newPage();
 
-  // We read the local image to embed it as base64 so it works offline/in puppeteer easily
   const imagePath = path.join(__dirname, 'public', 'images', 'profile', 'adam.jpg');
   let base64Image = '';
   if (fs.existsSync(imagePath)) {
@@ -23,257 +22,365 @@ const path = require('path');
 <head>
   <meta charset="UTF-8">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-    
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap');
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-    
+
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Open Sans', sans-serif;
       color: #333;
       background-color: white;
-      padding: 60px;
-      font-size: 11pt;
+      font-size: 9pt;
+      line-height: 1.45;
+      width: 100%;
+      height: 100%;
+    }
+
+    .resume-container {
+      display: flex;
+      width: 100%;
+      height: 1122px;
+      overflow: hidden;
+    }
+
+    /* Left Column */
+    .left-col {
+      width: 32%;
+      background-color: #e8e8e7;
+      padding: 35px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .profile-pic-container {
+      width: 125px;
+      height: 125px;
+      border-radius: 50%;
+      border: 4px solid #a3b1c6;
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+
+    .profile-pic {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Simple flat section badge */
+    .section-badge {
+      background-color: #2b2b2b;
+      color: white;
+      width: 100%;
+      padding: 8px 20px 8px 30px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13pt;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      margin-top: 18px;
+    }
+
+    .left-content {
+      width: 100%;
+      padding: 0 30px;
+    }
+
+    .contact-item {
+      margin-bottom: 14px;
+    }
+    .contact-item strong {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10pt;
+      color: #111;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .contact-item span {
+      font-size: 9pt;
+      color: #444;
+    }
+
+    .education-item {
+      margin-bottom: 14px;
+    }
+    .education-item strong {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10pt;
+      color: #111;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .education-item span {
+      font-size: 9pt;
+      color: #444;
+      display: block;
+    }
+
+    .skills-list {
+      list-style: none;
+      margin-bottom: 8px;
+    }
+    .skills-list li {
+      margin-bottom: 8px;
+      position: relative;
+      padding-left: 12px;
+      color: #444;
+      font-size: 9pt;
+    }
+    .skills-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #2b2b2b;
+      font-weight: bold;
+    }
+    .skills-list strong {
+      color: #111;
+      display: block;
+      font-size: 9.5pt;
+    }
+
+    /* Right Column */
+    .right-col {
+      width: 68%;
+      padding: 40px 35px;
+    }
+
+    h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 34pt;
+      font-weight: 800;
+      color: #222;
+      line-height: 1;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .job-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13pt;
+      font-weight: 600;
+      color: #555;
+      letter-spacing: 2px;
+      margin-bottom: 18px;
+    }
+
+    .summary-text {
+      font-size: 9.5pt;
+      color: #444;
+      text-align: justify;
+      margin-bottom: 20px;
       line-height: 1.5;
     }
-    
-    .header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    
-    .profile-pic {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 30px;
-      border: 3px solid #eee;
-    }
-    
-    .header-info {
-      flex: 1;
-    }
-    
-    h1 {
-      font-size: 28pt;
+
+    .right-section-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15pt;
       font-weight: 700;
       color: #222;
-      margin-bottom: 5px;
+      margin-bottom: 12px;
+      margin-top: 18px;
     }
-    
-    .job-title {
-      font-size: 14pt;
-      color: #555;
-      margin-bottom: 10px;
-    }
-    
-    .contact-info {
+
+    .timeline-item {
       display: flex;
-      gap: 20px;
-      font-size: 10pt;
-      color: #444;
-      align-items: center;
+      margin-bottom: 12px;
     }
-    
-    .contact-info span {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    
-    /* SVG icons */
-    .icon {
-      width: 14px;
-      height: 14px;
-      fill: currentColor;
-    }
-    
-    hr {
-      border: none;
-      border-top: 2px solid #ccc;
-      margin: 20px 0;
-    }
-    
-    .section-title {
-      font-size: 14pt;
+    .timeline-date {
+      width: 55px;
+      flex-shrink: 0;
       font-weight: 700;
-      color: #222;
-      text-transform: uppercase;
-      margin-bottom: 10px;
+      font-size: 9pt;
+      color: #333;
+      text-align: center;
+      padding-right: 12px;
+      position: relative;
+      line-height: 1.4;
     }
-    
-    .summary-text {
-      text-align: justify;
+
+    .timeline-content {
+      flex-grow: 1;
+      padding-left: 12px;
+      border-left: 2px solid #ccc;
+      padding-bottom: 5px;
     }
-    
-    .item-header {
-      margin-bottom: 5px;
+
+    .timeline-content-no-border {
+      flex-grow: 1;
+      padding-left: 0;
+      padding-bottom: 5px;
     }
-    
+
     .item-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11pt;
       font-weight: 700;
       color: #222;
-      font-size: 12pt;
     }
-    
+
     .item-subtitle {
-      font-size: 10.5pt;
+      font-size: 9.5pt;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .item-desc {
+      font-size: 9pt;
       color: #444;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
+      line-height: 1.4;
     }
-    
+
     .bullets {
-      padding-left: 20px;
-      margin-bottom: 15px;
+      padding-left: 15px;
+      color: #444;
+      font-size: 9pt;
     }
-    
     .bullets li {
-      margin-bottom: 5px;
+      margin-bottom: 3px;
+      line-height: 1.4;
     }
-    
-    .skills-list {
-      list-style-type: none;
-    }
-    
-    .skills-list li {
-      margin-bottom: 5px;
-    }
-    
-    .skills-category {
-      font-weight: 600;
-      color: #222;
-    }
+
   </style>
 </head>
 <body>
-  <div class="header">
-    ${base64Image ? `<img src="${base64Image}" class="profile-pic" alt="Profile Picture" />` : ''}
-    <div class="header-info">
-      <h1>Adam Wondale</h1>
+  <div class="resume-container">
+
+    <!-- Left Column -->
+    <div class="left-col">
+      <div class="profile-pic-container">
+        ${base64Image ? `<img src="${base64Image}" class="profile-pic" alt="Profile Picture" />` : ''}
+      </div>
+
+      <div class="section-badge" style="margin-top: 0;">Contact</div>
+      <div class="left-content">
+        <div class="contact-item">
+          <strong>Phone</strong>
+          <span>0967825821</span>
+        </div>
+        <div class="contact-item">
+          <strong>Email</strong>
+          <span>adambegizew@gmail.com</span>
+        </div>
+        <div class="contact-item">
+          <strong>Address</strong>
+          <span>Addis Ababa, Ethiopia</span>
+        </div>
+      </div>
+
+      <div class="section-badge">Education</div>
+      <div class="left-content">
+        <div class="education-item">
+          <strong>BSc Computer Science</strong>
+          <span>Unity University</span>
+          <span>Sep 2022 – Apr 2026</span>
+        </div>
+      </div>
+
+      <div class="section-badge">Skills</div>
+      <div class="left-content">
+        <ul class="skills-list">
+          <li><strong>Frontend & Mobile</strong>Next.js, React, TailwindCSS, TypeScript, HTML/CSS, React Native, Flutter, Redux</li>
+          <li><strong>Backend & Databases</strong>Node.js, Express.js, Python, FastAPI, PostgreSQL, MongoDB, GraphQL, Supabase, Neon, Convex</li>
+          <li><strong>Tools & DevOps</strong>Git, GitHub, Docker, AWS, Vercel, Postman, CI/CD</li>
+          <li><strong>Soft Skills</strong>Project Management, Team Leadership, Communication, Fast Learner, Problem Solving</li>
+        </ul>
+      </div>
+
+      <div class="section-badge">Language</div>
+      <div class="left-content">
+        <ul class="skills-list">
+          <li>Amharic (Native)</li>
+          <li>English (C1)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-col">
+      <h1>ADAM<br/>WONDALE</h1>
       <div class="job-title">Software Engineer</div>
-      <div class="contact-info">
-        <span>
-          <svg class="icon" viewBox="0 0 24 24">
-            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-          </svg>
-          0967825821
-        </span>
-        <span>
-          <svg class="icon" viewBox="0 0 24 24">
-            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-          </svg>
-          adambegizew@gmail.com
-        </span>
-        <span>
-          <svg class="icon" viewBox="0 0 24 24">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-          </svg>
-          Addis Ababa, Ethiopia
-        </span>
+
+      <p class="summary-text">
+        Recent Computer Science graduate building full-stack web and mobile applications. Works primarily with Next.js, React Native, and Node.js. Led backend development on a community crowdsourcing platform for final year project, plus built e-commerce apps and AI-powered exam prep tools. Focuses on practical, working software and adapts quickly to new stacks.
+      </p>
+
+      <div class="right-section-title">Professional Experience</div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">May<br>–<br>Jul 2026</div>
+        <div class="timeline-content">
+          <div class="item-title">Data Encoder (Volunteer)</div>
+          <div class="item-subtitle">CAWEE, Addis Ababa</div>
+          <ul class="bullets">
+            <li>Managed data entry, ensured data integrity, and maintained digital records.</li>
+            <li>Streamlined data collection processes and improved accuracy with team.</li>
+          </ul>
+        </div>
       </div>
+
+      <div class="right-section-title">Personal Projects</div>
+
+      <div class="timeline-item">
+        <div class="timeline-content-no-border">
+          <div class="item-title">Community Issue Crowdsourcing Platform <span style="font-weight: normal; font-size: 9.5pt; color: #555;">— Backend Engineer & PM</span></div>
+          <div class="item-desc">Platform for community members to report local issues. Final year university project.</div>
+          <ul class="bullets">
+            <li>Led backend dev and managed project lifecycle from ideation to delivery.</li>
+            <li>Implemented scalable RESTful APIs and optimized DB queries for concurrent reports.</li>
+            <li>Collaborated with frontend team for seamless API integration.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-content-no-border">
+          <div class="item-title">Shoe Store E-Commerce Platform <span style="font-weight: normal; font-size: 9.5pt; color: #555;">— Full Stack Developer</span></div>
+          <div class="item-desc">Digital catalog and ordering web app for a local shoe store.</div>
+          <ul class="bullets">
+            <li>Built custom cart, product filtering, and secure admin dashboard.</li>
+            <li>Integrated Supabase for real-time data syncing and auth.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-content-no-border">
+          <div class="item-title">AI-Powered Exit Exam Tool <span style="font-weight: normal; font-size: 9.5pt; color: #555;">— Developer</span></div>
+          <div class="item-desc">Educational platform generating targeted exit exam prep questions via AI.</div>
+          <ul class="bullets">
+            <li>Implemented filtering and mock data rendering with Drizzle ORM and PostgreSQL.</li>
+            <li>AI-generated step-by-step explanations for incorrect answers.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-content-no-border">
+          <div class="item-title">Interactive Developer Portfolio <span style="font-weight: normal; font-size: 9.5pt; color: #555;">— Frontend Developer</span></div>
+          <div class="item-desc">Modern, responsive portfolio using Next.js to showcase projects and skills.</div>
+          <ul class="bullets">
+            <li>Implemented micro-animations and responsive layout without generic templates.</li>
+            <li>Scored 100 on Lighthouse performance by optimizing images, fonts, and scripts.</li>
+          </ul>
+        </div>
+      </div>
+
     </div>
   </div>
-  
-  <hr />
-  
-  <div class="section">
-    <div class="section-title">Professional Summary</div>
-    <p class="summary-text">
-      I'm a recent Computer Science graduate who builds full-stack web and mobile applications. I work primarily with Next.js, React Native, and Node.js. For my final year project, I led backend development on a community crowdsourcing platform, and I've also built e-commerce Telegram bots and AI-powered exam prep tools. I care most about building practical software that actually works. I adapt quickly to new stacks and prefer straightforward communication.
-    </p>
-  </div>
-  
-  <hr />
-  
-  <div class="section">
-    <div class="section-title">Projects & Experience</div>
-    
-    <div class="item">
-      <div class="item-header">
-        <div class="item-title">Backend Engineer & Project Manager</div>
-        <div class="item-subtitle">Community Issue Crowdsourcing Platform (Final Year Project) | Sep 2025 – Apr 2026</div>
-      </div>
-      <ul class="bullets">
-        <li>Led backend development and managed the project lifecycle from ideation to delivery.</li>
-        <li>Built a robust platform allowing community members to report local issues, implemented with scalable API endpoints.</li>
-      </ul>
-    </div>
-    
-    <div class="item">
-      <div class="item-header">
-        <div class="item-title">Full Stack Developer</div>
-        <div class="item-subtitle">Shoe Store Telegram Bot | May 2024 – Aug 2024</div>
-      </div>
-      <ul class="bullets">
-        <li>Developed a digital catalog and seamless ordering system integrated directly into Telegram for a local shoe store.</li>
-      </ul>
-    </div>
-    
-    <div class="item">
-      <div class="item-header">
-        <div class="item-title">Developer</div>
-        <div class="item-subtitle">AI-Powered Exit Exam Tool | Sep 2024 – Jan 2025</div>
-      </div>
-      <ul class="bullets">
-        <li>Created an application that generates targeted exit exam preparation questions powered by AI algorithms.</li>
-      </ul>
-    </div>
-    
-    <div class="item">
-      <div class="item-header">
-        <div class="item-title">Frontend Developer</div>
-        <div class="item-subtitle">Personal Portfolio Website | Jun 2026 – Present</div>
-      </div>
-      <ul class="bullets">
-        <li>Built a modern, responsive portfolio website using Next.js to showcase projects, skills, and professional experience.</li>
-      </ul>
-    </div>
-    
-    <div class="item">
-      <div class="item-header">
-        <div class="item-title">Data Encoder (Volunteer)</div>
-        <div class="item-subtitle">CAWEE, Addis Ababa | Jan 2024 – Feb 2024</div>
-      </div>
-      <ul class="bullets">
-        <li>Volunteered for 1.5 months to manage data entry, ensure data integrity, and maintain digital records.</li>
-      </ul>
-    </div>
-  </div>
-  
-  <hr />
-  
-  <div class="section">
-    <div class="section-title">Education</div>
-    <div class="item">
-      <div class="item-header">
-        <div class="item-title">Bachelor of Science in Computer Science</div>
-        <div class="item-subtitle">Unity University | Sep 2022 – Apr 2026</div>
-      </div>
-    </div>
-  </div>
-  
-  <hr />
-  
-  <div class="section">
-    <div class="section-title">Skills</div>
-    <ul class="skills-list">
-      <li><span class="skills-category">Frontend & Mobile:</span> Next.js, TailwindCSS, React Native, Flutter</li>
-      <li><span class="skills-category">Backend & Databases:</span> Express.js, GraphQL, Supabase, Neon DB, Convex</li>
-      <li><span class="skills-category">Tools & DevOps:</span> Git, GitHub, Docker, Vercel</li>
-    </ul>
-  </div>
-  
 </body>
 </html>
   `;
 
   await page.setContent(html, { waitUntil: 'networkidle0' });
-  
+
   const outputPath = path.join(__dirname, 'public', 'images', 'profile', 'Adam_Wondale_CV.pdf');
   await page.pdf({
     path: outputPath,

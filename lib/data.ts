@@ -4,6 +4,7 @@ export interface Project {
     title: string;
     impact: string;
     desc: string;
+    bullets?: string[];
     tags: string[];
     image: string;
     imageAlt: string;
@@ -20,6 +21,7 @@ export interface TimelineItem {
     date: string;
     role: string;
     company: string;
+    url?: string;
     badge: "Work" | "Education";
     desc: string;
     side: "left" | "right";
@@ -27,7 +29,7 @@ export interface TimelineItem {
 
 export const stats = {
     years: 0,
-    projects: 3,
+    projects: 4,
     clients: 0,
     repos: 15,
 };
@@ -36,71 +38,101 @@ export const projects: Project[] = [
     {
         id: "p1",
         num: "01",
-        title: "Aynawaj Shoes",
-        impact: "Fully functional custom storefront and checkout",
-        desc: "A full-stack e-commerce platform for selling shoes. Built from scratch with a custom cart management system, product filtering, and admin dashboard instead of using Shopify.",
-        tags: ["React", "Next.js", "Node.js", "PostgreSQL"],
-        image: "/images/profile/aynawj.jpg",
-        imageAlt: "Aynawaj Shoe E-Commerce",
-        liveUrl: "https://aynawaj.vercel.app/?v=3",
-        githubUrl: "https://github.com/rtqt/aynawaj",
+        title: "Community Issue Crowdsourcing Platform",
+        impact: "Backend Engineer & PM",
+        desc: "Platform for community members to report local issues. Final year university project.",
+        bullets: [
+            "Led backend dev and managed project lifecycle from ideation to delivery.",
+            "Implemented scalable RESTful APIs and optimized DB queries for concurrent reports.",
+            "Collaborated with frontend team for seamless API integration."
+        ],
+        tags: ["Node.js", "Express", "PostgreSQL", "REST API"],
+        image: "/images/projects/aw-logo.svg",
+        imageAlt: "Community Crowdsourcing",
+        liveUrl: "",
+        githubUrl: "",
     },
     {
         id: "p2",
         num: "02",
+        title: "Shoe Store E-Commerce Platform",
+        impact: "Full Stack Developer",
+        desc: "Digital catalog and ordering web app for a local shoe store.",
+        bullets: [
+            "Built custom cart, product filtering, and secure admin dashboard.",
+            "Integrated Supabase for real-time data syncing and auth."
+        ],
+        tags: ["React", "Next.js", "Node.js", "Supabase"],
+        image: "/images/profile/aynawj.jpg",
+        imageAlt: "Shoe Store Platform",
+        liveUrl: "https://aynawaj.vercel.app/?v=3",
+        githubUrl: "https://github.com/rtqt/aynawaj",
+    },
+    {
+        id: "p3",
+        num: "03",
+        title: "AI-Powered Exit Exam Tool",
+        impact: "Developer",
+        desc: "Educational platform generating targeted exit exam prep questions via AI.",
+        bullets: [
+            "Implemented filtering and mock data rendering with Drizzle ORM and PostgreSQL.",
+            "AI-generated step-by-step explanations for incorrect answers."
+        ],
+        tags: ["React", "Express", "Drizzle", "PostgreSQL"],
+        image: "/images/projects/exit-exam.png",
+        imageAlt: "Exit Exam Tool",
+        liveUrl: "https://exitexam-six.vercel.app/",
+        githubUrl: "https://github.com/rtqt/exit-exam",
+    },
+    {
+        id: "p4",
+        num: "04",
         title: "Interactive Developer Portfolio",
-        impact: "Scored 100 on Lighthouse performance audit",
-        desc: "This very website. Designed and built to showcase my projects with engaging micro-animations and a clean, responsive layout without relying on generic templates.",
+        impact: "Frontend Developer",
+        desc: "Modern, responsive portfolio using Next.js to showcase projects and skills.",
+        bullets: [
+            "Implemented micro-animations and responsive layout without generic templates.",
+            "Scored 100 on Lighthouse performance by optimizing images, fonts, and scripts."
+        ],
         tags: ["React", "Next.js", "CSS Animations"],
         image: "/images/projects/aw-logo.svg",
         imageAlt: "Developer Portfolio",
         liveUrl: "https://adamwondale.dev",
         githubUrl: "https://github.com/rtqt/personal-portfolio",
     },
-    {
-        id: "p3",
-        num: "03",
-        title: "Exit Exam Platform",
-        impact: "Comprehensive mock exam preparation",
-        desc: "A full-stack educational platform for university students to prepare for exit exams. Features robust filtering, mock data rendering, and a fully typed backend with Drizzle ORM.",
-        tags: ["React", "Express", "Drizzle", "PostgreSQL"],
-        image: "/images/projects/exit-exam.png",
-        imageAlt: "Exit Exam Preparation Platform",
-        liveUrl: "https://exitexam-six.vercel.app/",
-        githubUrl: "https://github.com/rtqt/exit-exam",
-    },
 ];
 
 export const skillGroups: SkillGroup[] = [
     {
-        group: "Frontend",
-        skills: ["React / Next.js", "TypeScript", "CSS / Animation"],
+        group: "Frontend & Mobile",
+        skills: ["Next.js", "React", "TailwindCSS", "TypeScript", "HTML/CSS", "React Native", "Flutter", "Redux"],
     },
     {
-        group: "Backend",
-        skills: ["Node.js / Express", "Python / FastAPI", "PostgreSQL / MongoDB"],
+        group: "Backend & Databases",
+        skills: ["Node.js", "Express.js", "Python", "FastAPI", "PostgreSQL", "MongoDB", "GraphQL", "Supabase", "Neon", "Convex"],
     },
     {
-        group: "DevOps & Tools",
-        skills: ["Docker / AWS", "Git / CI/CD"],
+        group: "Tools & DevOps",
+        skills: ["Git", "GitHub", "Docker", "AWS", "Vercel", "Postman", "CI/CD"],
     },
+    {
+        group: "Soft Skills",
+        skills: ["Project Management", "Team Leadership", "Communication", "Fast Learner", "Problem Solving"],
+    },
+    {
+        group: "Languages",
+        skills: ["Amharic (Native)", "English (C1)"],
+    }
 ];
 
 export const timeline: TimelineItem[] = [
     {
-        date: "2024 — Present",
-        role: "Full Stack Developer (Self-Employed)",
-        company: "Independent Projects",
+        date: "May — Jul 2026",
+        role: "Data Encoder (Volunteer)",
+        company: "CAWEE",
+        url: "https://cawee-ethiopia.org/",
         badge: "Work",
-        desc: "Designed, developed, and launched a custom e-commerce solution for a shoe business. Handled everything from database design to frontend animations and checkout flows.",
+        desc: "Managed data entry, ensured data integrity, and maintained digital records. Streamlined data collection processes and improved accuracy with team.",
         side: "left",
-    },
-    {
-        date: "2022 — 2026",
-        role: "BSc Computer Science",
-        company: "Unity University",
-        badge: "Education",
-        desc: "Graduated with a focus on web technologies and software engineering. Constantly built side projects to apply theoretical concepts to real-world applications.",
-        side: "right",
-    },
+    }
 ];
