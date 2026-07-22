@@ -6,6 +6,16 @@ import { projects } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { put, del } from "@vercel/blob";
 
+function isValidHttpUrl(urlString: string | null): boolean {
+  if (!urlString) return true;
+  try {
+    const url = new URL(urlString);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export async function addProjectAction(formData: FormData) {
   try {
     const password = formData.get("password")?.toString();
@@ -31,6 +41,17 @@ export async function addProjectAction(formData: FormData) {
 
     if (!num || !title || !impact || !desc || !tagsString || !imageAlt || !imageFile) {
        return { error: "Missing required fields" };
+    }
+
+    // Security: Validate URL protocols to prevent XSS via javascript: URI schemes
+    if (!isValidHttpUrl(liveUrl) || !isValidHttpUrl(githubUrl)) {
+      return { error: "Invalid URL. Only HTTP and HTTPS protocols are allowed." };
+    }
+
+    // Security: Validate image MIME type to prevent arbitrary/malicious file uploads (e.g. SVG/HTML script injection)
+    const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    if (!allowedMimeTypes.includes(imageFile.type)) {
+      return { error: "Invalid file type. Only JPEG, PNG, GIF, and WEBP images are allowed." };
     }
 
     const tags = tagsString.split(",").map(t => t.trim());
@@ -99,6 +120,9 @@ export async function deleteProjectAction(formData: FormData) {
     }
     
     const projectId = parseInt(projectIdStr, 10);
+    if (isNaN(projectId)) {
+      return { error: "Invalid projectId format" };
+    }
 
     // 2. Fetch project record to get image URL
     let project;
